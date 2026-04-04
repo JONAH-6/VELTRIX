@@ -20,31 +20,51 @@ const HomePage = () => {
     setUnlockedLevelState(getUnlockedLevel())
   }
 
-  // Load balance and unlocked level on mount & storage changes
+  // Initial load and storage changes from other tabs
   useEffect(() => {
     refreshData()
     window.addEventListener('storage', refreshData)
     return () => window.removeEventListener('storage', refreshData)
   }, [])
 
-  // Detect payment success from URL parameters (after Paystack redirect)
+  // Detect payment success from URL parameters after Paystack redirect
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
     const reference = urlParams.get('reference')
-    const paymentSuccess = urlParams.get('payment_success') === 'true'
+    const trxref = urlParams.get('trxref')
 
-    if (paymentSuccess && reference) {
-      // Payment successful – add ₦3,000 and unlock Level 1 if needed
+    if (reference && trxref && reference === trxref) {
+      // Prevent double processing on page refresh
+      const processedKey = `processed_ref_${reference}`
+      if (sessionStorage.getItem(processedKey)) {
+        // Already processed, just clean URL
+        window.history.replaceState({}, '', window.location.pathname)
+        return
+      }
+      sessionStorage.setItem(processedKey, 'true')
+
+      // Add funds
       const currentBalance = getWalletBalance()
       const newBalance = currentBalance + 3000
       setWalletBalance(newBalance)
-      if (getUnlockedLevel() === 0) {
+
+      // Unlock Level 1 if not already unlocked
+      let currentUnlocked = getUnlockedLevel()
+      if (currentUnlocked === 0) {
         setUnlockedLevel(1)
+        currentUnlocked = 1
       }
-      alert('Payment successful! ₦3,000 added to your wallet.')
-      // Remove query parameters from URL without reloading
+
+      // Force UI update
+      setWalletBalanceState(newBalance)
+      setUnlockedLevelState(currentUnlocked)
+
+      alert(
+        `Payment successful! ₦3,000 added. New balance: ₦${newBalance.toLocaleString()}`
+      )
+
+      // Remove query parameters from URL without reload
       window.history.replaceState({}, '', window.location.pathname)
-      refreshData()
     }
   }, [])
 

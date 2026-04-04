@@ -6,6 +6,7 @@ import MainLayout from 'src/layouts/MainLayout/MainLayout'
 
 // Page imports
 import AddFundsPage from 'src/pages/AddFundsPage/AddFundsPage'
+import AddFundsSuccessPage from 'src/pages/AddFundsSuccessPage/AddFundsSuccessPage'
 import GamePage from 'src/pages/GamePage/GamePage'
 import HomePage from 'src/pages/HomePage/HomePage'
 import Level1Page from 'src/pages/Level1Page/Level1Page'
@@ -25,6 +26,7 @@ const Routes = () => {
       {/* All main pages use MainLayout */}
       <Set wrap={MainLayout}>
         <Route path="/" page={HomePage} name="home" />
+        <Route path="/add-funds-success" page={AddFundsSuccessPage} name="addFundsSuccess" />
         <Route path="/add-funds" page={AddFundsPage} name="addFunds" />
         <Route path="/add-funds/success" page={AddFundsPage} name="addFundsSuccess" /> {/* 👈 ADD THIS */}
         <Route path="/withdraw" page={WithdrawPage} name="withdraw" />

@@ -1,45 +1,16 @@
 // web/src/pages/AddFundsPage/AddFundsPage.tsx
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { navigate, routes } from '@redwoodjs/router'
 
-import {
-  getWalletBalance,
-  setWalletBalance,
-  getUnlockedLevel,
-  setUnlockedLevel,
-} from 'src/lib/levelHelpers'
-
-// REPLACE THIS WITH YOUR ACTUAL PAYSTACK PAYMENT PAGE LINK
+// IMPORTANT: Replace with your actual Paystack payment page link
 const PAYSTACK_PAYMENT_URL = 'https://paystack.shop/pay/planss1'
+
 const AddFundsPage = () => {
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // This runs when Paystack redirects back to our success URL
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const reference = urlParams.get('reference')
-    const trxref = urlParams.get('trxref')
-
-    if (reference && trxref && reference === trxref) {
-      // Payment successful
-      const currentBalance = getWalletBalance()
-      const newBalance = currentBalance + 3000
-      setWalletBalance(newBalance)
-
-      // Unlock Level 1 if not already unlocked
-      if (getUnlockedLevel() === 0) {
-        setUnlockedLevel(1)
-      }
-
-      alert('Payment successful! ₦3,000 added to your wallet.')
-      navigate(routes.home())
-    }
-  }, [])
-
   const handleAddFunds = () => {
     setIsProcessing(true)
-    // Redirect to Paystack payment page
     window.location.href = PAYSTACK_PAYMENT_URL
   }
 
@@ -61,7 +32,7 @@ const AddFundsPage = () => {
       <button
         onClick={handleAddFunds}
         disabled={isProcessing}
-        className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium text-lg transition disabled:bg-gray-600 disabled:cursor-not-allowed"
+        className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium text-lg transition disabled:bg-gray-600"
       >
         {isProcessing ? 'Redirecting...' : 'Pay ₦3,000 with Paystack'}
       </button>
@@ -73,7 +44,7 @@ const AddFundsPage = () => {
             e.preventDefault()
             navigate(routes.home())
           }}
-          className="text-gray-400 hover:text-white transition"
+          className="text-gray-400 hover:text-white"
         >
           ← Back to Dashboard
         </a>

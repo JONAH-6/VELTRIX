@@ -5,28 +5,52 @@ import { Link, routes } from '@redwoodjs/router'
 
 import {
   getWalletBalance,
+  setWalletBalance,
   getUnlockedLevel,
+  setUnlockedLevel,
   canPlayAnyGame,
 } from 'src/lib/levelHelpers'
 
 const HomePage = () => {
-  const [walletBalance, setWalletBalance] = useState(0)
-  const [unlockedLevel, setUnlockedLevel] = useState(0)
+  const [walletBalance, setWalletBalanceState] = useState(0)
+  const [unlockedLevel, setUnlockedLevelState] = useState(0)
 
-  const refresh = () => {
-    setWalletBalance(getWalletBalance())
-    setUnlockedLevel(getUnlockedLevel())
+  const refreshData = () => {
+    setWalletBalanceState(getWalletBalance())
+    setUnlockedLevelState(getUnlockedLevel())
   }
 
+  // Load balance and unlocked level on mount & storage changes
   useEffect(() => {
-    refresh()
-    window.addEventListener('storage', refresh)
-    return () => window.removeEventListener('storage', refresh)
+    refreshData()
+    window.addEventListener('storage', refreshData)
+    return () => window.removeEventListener('storage', refreshData)
+  }, [])
+
+  // Detect payment success from URL parameters (after Paystack redirect)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const reference = urlParams.get('reference')
+    const paymentSuccess = urlParams.get('payment_success') === 'true'
+
+    if (paymentSuccess && reference) {
+      // Payment successful – add ₦3,000 and unlock Level 1 if needed
+      const currentBalance = getWalletBalance()
+      const newBalance = currentBalance + 3000
+      setWalletBalance(newBalance)
+      if (getUnlockedLevel() === 0) {
+        setUnlockedLevel(1)
+      }
+      alert('Payment successful! ₦3,000 added to your wallet.')
+      // Remove query parameters from URL without reloading
+      window.history.replaceState({}, '', window.location.pathname)
+      refreshData()
+    }
   }, [])
 
   const clearBalance = () => {
     localStorage.setItem('veltrix_wallet_balance', '0')
-    refresh()
+    refreshData()
   }
 
   const canPlay = canPlayAnyGame()

@@ -4,18 +4,77 @@ import { useEffect, useState, useRef } from 'react'
 
 import { navigate, routes } from '@redwoodjs/router'
 
+// -------- QUESTION BANK (same as before) --------
+const QUESTIONS = [
+  {
+    text: 'What is the capital of France?',
+    options: ['Berlin', 'Madrid', 'Paris', 'Lisbon'],
+    correct: 2,
+  },
+  {
+    text: 'Which planet is known as the Red Planet?',
+    options: ['Mars', 'Jupiter', 'Venus', 'Saturn'],
+    correct: 0,
+  },
+  {
+    text: 'Who painted the Mona Lisa?',
+    options: ['Van Gogh', 'Picasso', 'Da Vinci', 'Rembrandt'],
+    correct: 2,
+  },
+  {
+    text: 'What is the largest ocean on Earth?',
+    options: ['Atlantic', 'Indian', 'Arctic', 'Pacific'],
+    correct: 3,
+  },
+  {
+    text: 'Which year did World War II end?',
+    options: ['1943', '1944', '1945', '1946'],
+    correct: 2,
+  },
+  {
+    text: 'What is the square root of 64?',
+    options: ['6', '7', '8', '9'],
+    correct: 2,
+  },
+  {
+    text: "Who wrote 'Romeo and Juliet'?",
+    options: [
+      'Charles Dickens',
+      'Jane Austen',
+      'Mark Twain',
+      'William Shakespeare',
+    ],
+    correct: 3,
+  },
+  {
+    text: 'What is the hardest natural substance?',
+    options: ['Gold', 'Iron', 'Diamond', 'Platinum'],
+    correct: 2,
+  },
+  {
+    text: 'Which country gifted the Statue of Liberty to the USA?',
+    options: ['England', 'Spain', 'France', 'Germany'],
+    correct: 2,
+  },
+  {
+    text: 'What is the fastest land animal?',
+    options: ['Lion', 'Cheetah', 'Leopard', 'Tiger'],
+    correct: 1,
+  },
+]
+
 const Level1Page = () => {
   const [score, setScore] = useState(0)
   const [health, setHealth] = useState(5)
-  const [timeLeft, setTimeLeft] = useState(30)
   const [gameActive, setGameActive] = useState(true)
   const [winMessage, setWinMessage] = useState<string | null>(null)
-  const [targetVisible, setTargetVisible] = useState(false)
-  const [targetX, setTargetX] = useState(0)
-  const [targetY, setTargetY] = useState(0)
-
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [feedback, setFeedback] = useState<string>('')
+  const [timeLeft, setTimeLeft] = useState(10)
+  const [questionTimer, setQuestionTimer] = useState<NodeJS.Timeout | null>(
+    null
+  )
 
   const WIN_SCORE = 200
   const START_HEALTH = 5
@@ -42,157 +101,169 @@ const Level1Page = () => {
     setTimeout(() => navigate(routes.home()), 2000)
   }
 
-  const showTarget = () => {
+  const updateHealth = (delta: number) => {
     if (!gameActive) return
-    const container = document.getElementById('game-container')
-    if (!container) return
-    const rect = container.getBoundingClientRect()
-    const size = 80
-    const maxX = rect.width - size - 20
-    const maxY = rect.height - size - 20
-    const x = Math.random() * maxX + 10
-    const y = Math.random() * maxY + 10
-    setTargetX(x)
-    setTargetY(y)
-    setTargetVisible(true)
-
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    timeoutRef.current = setTimeout(() => {
-      if (targetVisible && gameActive) {
-        setHealth((prev) => {
-          const newHealth = prev - 1
-          if (newHealth <= 0) handleLose()
-          return newHealth
-        })
-        setTargetVisible(false)
-        setTimeout(() => showTarget(), 500)
-      }
-    }, 1000)
+    const newHealth = Math.max(0, Math.min(5, health - delta))
+    setHealth(newHealth)
+    if (newHealth <= 0) handleLose()
   }
 
-  const handleTargetClick = () => {
-    if (!gameActive || !targetVisible) return
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    setTargetVisible(false)
-    setScore((prev) => {
-      const newScore = prev + 10
-      if (newScore >= WIN_SCORE) handleWin()
-      return newScore
-    })
-    setTimeout(() => showTarget(), 300)
+  const updateScore = (points: number) => {
+    if (!gameActive) return
+    const newScore = score + points
+    setScore(newScore)
+    if (newScore >= WIN_SCORE) handleWin()
   }
 
+  const nextQuestion = () => {
+    setSelectedAnswer(null)
+    setFeedback('')
+    if (questionTimer) clearTimeout(questionTimer)
+    setTimeLeft(10)
+    const nextIndex = (currentQuestion + 1) % QUESTIONS.length
+    setCurrentQuestion(nextIndex)
+  }
+
+  const handleAnswer = (optionIndex: number) => {
+    if (!gameActive || selectedAnswer !== null) return
+    setSelectedAnswer(optionIndex)
+    if (questionTimer) clearTimeout(questionTimer)
+
+    const isCorrect = optionIndex === QUESTIONS[currentQuestion].correct
+    if (isCorrect) {
+      updateScore(10)
+      setFeedback('Correct! +10 points')
+    } else {
+      updateHealth(1)
+      const correctAnswer =
+        QUESTIONS[currentQuestion].options[QUESTIONS[currentQuestion].correct]
+      setFeedback(`Wrong! The correct answer was: ${correctAnswer}. -1 health`)
+    }
+    setTimeout(() => {
+      if (!gameActive) return
+      nextQuestion()
+    }, 1500)
+  }
+
+  // Timer per question
   useEffect(() => {
     if (!gameActive) return
-    const timer = setInterval(() => {
+    if (selectedAnswer !== null) return
+
+    const timer = setTimeout(() => {
+      if (!gameActive || selectedAnswer !== null) return
+      updateHealth(1)
+      setFeedback(
+        `Time's up! The correct answer was: ${QUESTIONS[currentQuestion].options[QUESTIONS[currentQuestion].correct]}. -1 health`
+      )
+      setSelectedAnswer(-1)
+      setTimeout(() => {
+        if (!gameActive) return
+        nextQuestion()
+      }, 1500)
+    }, 10000)
+    setQuestionTimer(timer)
+    return () => clearTimeout(timer)
+  }, [currentQuestion, gameActive, selectedAnswer])
+
+  // Timer countdown display
+  useEffect(() => {
+    if (!gameActive || selectedAnswer !== null) return
+    const interval = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(timer)
-          if (score >= WIN_SCORE) handleWin()
-          else handleLose()
+          clearInterval(interval)
           return 0
         }
         return prev - 1
       })
     }, 1000)
-    intervalRef.current = timer
-    return () => clearInterval(timer)
-  }, [gameActive, score])
+    return () => clearInterval(interval)
+  }, [currentQuestion, gameActive, selectedAnswer])
 
   useEffect(() => {
-    showTarget()
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [])
+    setTimeLeft(10)
+  }, [currentQuestion])
 
-  useEffect(() => {
-    if (score >= WIN_SCORE && gameActive) handleWin()
-    if (health <= 0 && gameActive) handleLose()
-  }, [score, health, gameActive])
+  const question = QUESTIONS[currentQuestion]
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-gray-900 to-gray-800">
-      {/* Header stats - no emojis */}
-      <div className="bg-black bg-opacity-50 backdrop-blur-sm p-4 flex justify-between text-white font-mono text-lg border-b border-gray-700">
-        <div className="bg-gray-800 px-4 py-1 rounded-full">
+      {/* Header stats - responsive */}
+      <div className="bg-black bg-opacity-50 backdrop-blur-sm p-2 md:p-4 flex flex-wrap justify-between gap-2 text-white font-mono text-sm md:text-lg border-b border-gray-700">
+        <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full text-xs md:text-base">
           Score: {score} / {WIN_SCORE}
         </div>
-        <div className="bg-gray-800 px-4 py-1 rounded-full">
+        <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full text-xs md:text-base">
           Health: {health}
         </div>
-        <div className="bg-gray-800 px-4 py-1 rounded-full">
+        <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full text-xs md:text-base">
           Time: {timeLeft}s
         </div>
       </div>
 
-      {/* Game area */}
-      <div
-        id="game-container"
-        className="flex-1 relative overflow-hidden"
-        style={{
-          touchAction: 'none',
-          background: 'radial-gradient(circle at center, #1a2a3a, #0a0a1a)',
-        }}
-      >
-        {targetVisible && (
-          <div
-            onClick={handleTargetClick}
-            onTouchStart={handleTargetClick}
-            className="absolute cursor-pointer transition-all duration-100 hover:scale-110 active:scale-95 animate-pulse"
-            style={{
-              left: targetX,
-              top: targetY,
-              width: 80,
-              height: 80,
-              borderRadius: '50%',
-              background:
-                'radial-gradient(circle at 30% 30%, #fbbf24, #d97706)',
-              boxShadow:
-                '0 0 20px rgba(251,191,36,0.8), inset 0 2px 5px rgba(255,255,255,0.6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 24,
-              fontWeight: 'bold',
-              color: '#fff',
-              textShadow: '1px 1px 0 #000',
-              border: '3px solid #fff',
-            }}
-          >
-            TAP
+      {/* Question area - fully responsive */}
+      <div className="flex-1 flex flex-col items-center justify-center p-3 md:p-6">
+        <div className="bg-gray-800 rounded-2xl p-4 md:p-6 w-full max-w-full md:max-w-2xl shadow-2xl border border-gray-700">
+          <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 text-center break-words">
+            {question.text}
+          </h2>
+          <div className="grid grid-cols-1 gap-3 md:gap-4">
+            {question.options.map((opt, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleAnswer(idx)}
+                disabled={selectedAnswer !== null || !gameActive}
+                className={`
+                  py-2 md:py-3 px-3 md:px-4 rounded-lg text-left transition-all text-sm md:text-base
+                  ${
+                    selectedAnswer === null && gameActive
+                      ? 'bg-gray-700 hover:bg-gray-600 cursor-pointer'
+                      : 'bg-gray-600 cursor-not-allowed opacity-70'
+                  }
+                  text-white font-medium break-words
+                `}
+              >
+                <span className="font-bold">
+                  {String.fromCharCode(65 + idx)}.
+                </span>{' '}
+                {opt}
+              </button>
+            ))}
           </div>
-        )}
-        {!targetVisible && gameActive && (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400 text-xl">
-            <div className="bg-gray-800 bg-opacity-70 p-6 rounded-2xl backdrop-blur-sm">
-              Get ready...
+          {feedback && (
+            <div
+              className={`mt-4 md:mt-6 p-2 md:p-3 rounded-lg text-center font-semibold text-sm md:text-base ${feedback.startsWith('Correct') ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}
+            >
+              {feedback}
             </div>
-          </div>
-        )}
-        {winMessage && (
-          <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center z-10">
-            <div className="text-center text-white text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 p-8 rounded-2xl shadow-2xl">
-              {winMessage}
-            </div>
-          </div>
-        )}
-        {!gameActive && !winMessage && health <= 0 && (
-          <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center z-10">
-            <div className="text-center text-red-500 text-2xl font-bold bg-gray-900 p-8 rounded-2xl border border-red-500">
-              GAME OVER
-              <br />
-              Returning to dashboard...
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      <div className="bg-gray-800 p-3 text-center text-gray-300 text-sm border-t border-gray-700">
-        Tap the golden button before it disappears (1 sec). Miss = lose 1
-        health. Reach 200 points or survive 30 seconds!
+      {/* Bottom info - responsive */}
+      <div className="bg-gray-800 p-2 md:p-3 text-center text-gray-300 text-xs md:text-sm border-t border-gray-700">
+        Answer correctly to earn 10 points. Wrong answer or timeout loses 1
+        health. First to {WIN_SCORE} points wins!
       </div>
+
+      {/* Win/Lose overlays (unchanged) */}
+      {winMessage && (
+        <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center z-10">
+          <div className="text-center text-white text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 p-6 md:p-8 rounded-2xl shadow-2xl mx-4">
+            {winMessage}
+          </div>
+        </div>
+      )}
+      {!gameActive && !winMessage && health <= 0 && (
+        <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center z-10">
+          <div className="text-center text-red-500 text-xl md:text-2xl font-bold bg-gray-900 p-6 md:p-8 rounded-2xl border border-red-500 mx-4">
+            GAME OVER
+            <br />
+            Returning to dashboard...
+          </div>
+        </div>
+      )}
     </div>
   )
 }

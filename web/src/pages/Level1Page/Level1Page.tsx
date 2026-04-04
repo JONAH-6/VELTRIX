@@ -1,10 +1,16 @@
 // web/src/pages/Level1Page/Level1Page.tsx
-
 import { useEffect, useState, useRef } from 'react'
 
 import { navigate, routes } from '@redwoodjs/router'
 
-// -------- QUESTION BANK (same as before) --------
+import {
+  getWalletBalance,
+  setWalletBalance,
+  getUnlockedLevel,
+  setUnlockedLevel,
+  isLevelUnlocked,
+} from 'src/lib/levelHelpers'
+
 const QUESTIONS = [
   {
     text: 'What is the capital of France?',
@@ -70,29 +76,49 @@ const Level1Page = () => {
   const [winMessage, setWinMessage] = useState<string | null>(null)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
-  const [feedback, setFeedback] = useState<string>('')
+  const [feedback, setFeedback] = useState('')
   const [timeLeft, setTimeLeft] = useState(10)
   const [questionTimer, setQuestionTimer] = useState<NodeJS.Timeout | null>(
     null
   )
+  const [showCashoutModal, setShowCashoutModal] = useState(false)
+  const [newBalanceAfterWin, setNewBalanceAfterWin] = useState(0)
 
   const WIN_SCORE = 200
-  const START_HEALTH = 5
 
-  const getActualWallet = () =>
-    parseFloat(localStorage.getItem('veltrix_wallet_balance') || '0')
-  const setActualWallet = (val: number) =>
-    localStorage.setItem('veltrix_wallet_balance', val.toString())
+  // Check prerequisites
+  useEffect(() => {
+    const wallet = getWalletBalance()
+    const unlocked = isLevelUnlocked(1)
+    if (wallet <= 0) {
+      alert('You need funds to play. Please add funds.')
+      navigate(routes.home())
+    } else if (!unlocked) {
+      alert('Level 1 is locked. You must add funds to unlock it.')
+      navigate(routes.home())
+    }
+  }, [])
 
   const handleWin = () => {
     if (!gameActive) return
     setGameActive(false)
-    const newBalance = getActualWallet() * 2
-    setActualWallet(newBalance)
-    setWinMessage(
-      `Level 1 Complete! Money doubled: ₦${newBalance.toLocaleString()}`
-    )
-    setTimeout(() => navigate(routes.level2()), 2000)
+    const currentBalance = getWalletBalance()
+    const newBalance = currentBalance * 2
+    setWalletBalance(newBalance)
+    setNewBalanceAfterWin(newBalance)
+    // Unlock Level 2
+    if (getUnlockedLevel() < 2) setUnlockedLevel(2)
+    setShowCashoutModal(true)
+  }
+
+  const handleCashout = () => {
+    setShowCashoutModal(false)
+    navigate(routes.home())
+  }
+
+  const handleContinue = () => {
+    setShowCashoutModal(false)
+    navigate(routes.level2())
   }
 
   const handleLose = () => {
@@ -115,6 +141,7 @@ const Level1Page = () => {
     if (newScore >= WIN_SCORE) handleWin()
   }
 
+  // Rest of quiz logic (nextQuestion, handleAnswer, timers) same as before
   const nextQuestion = () => {
     setSelectedAnswer(null)
     setFeedback('')
@@ -145,28 +172,24 @@ const Level1Page = () => {
     }, 1500)
   }
 
-  // Timer per question
   useEffect(() => {
     if (!gameActive) return
     if (selectedAnswer !== null) return
-
     const timer = setTimeout(() => {
       if (!gameActive || selectedAnswer !== null) return
       updateHealth(1)
       setFeedback(
-        `Time's up! The correct answer was: ${QUESTIONS[currentQuestion].options[QUESTIONS[currentQuestion].correct]}. -1 health`
+        `Time's up! Correct answer: ${QUESTIONS[currentQuestion].options[QUESTIONS[currentQuestion].correct]}. -1 health`
       )
       setSelectedAnswer(-1)
       setTimeout(() => {
-        if (!gameActive) return
-        nextQuestion()
+        if (gameActive) nextQuestion()
       }, 1500)
     }, 10000)
     setQuestionTimer(timer)
     return () => clearTimeout(timer)
   }, [currentQuestion, gameActive, selectedAnswer])
 
-  // Timer countdown display
   useEffect(() => {
     if (!gameActive || selectedAnswer !== null) return
     const interval = setInterval(() => {
@@ -189,20 +212,20 @@ const Level1Page = () => {
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-gray-900 to-gray-800">
-      {/* Header stats - responsive */}
+      {/* Header stats */}
       <div className="bg-black bg-opacity-50 backdrop-blur-sm p-2 md:p-4 flex flex-wrap justify-between gap-2 text-white font-mono text-sm md:text-lg border-b border-gray-700">
-        <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full text-xs md:text-base">
+        <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full">
           Score: {score} / {WIN_SCORE}
         </div>
-        <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full text-xs md:text-base">
+        <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full">
           Health: {health}
         </div>
-        <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full text-xs md:text-base">
+        <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full">
           Time: {timeLeft}s
         </div>
       </div>
 
-      {/* Question area - fully responsive */}
+      {/* Question area */}
       <div className="flex-1 flex flex-col items-center justify-center p-3 md:p-6">
         <div className="bg-gray-800 rounded-2xl p-4 md:p-6 w-full max-w-full md:max-w-2xl shadow-2xl border border-gray-700">
           <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 text-center break-words">
@@ -214,15 +237,7 @@ const Level1Page = () => {
                 key={idx}
                 onClick={() => handleAnswer(idx)}
                 disabled={selectedAnswer !== null || !gameActive}
-                className={`
-                  py-2 md:py-3 px-3 md:px-4 rounded-lg text-left transition-all text-sm md:text-base
-                  ${
-                    selectedAnswer === null && gameActive
-                      ? 'bg-gray-700 hover:bg-gray-600 cursor-pointer'
-                      : 'bg-gray-600 cursor-not-allowed opacity-70'
-                  }
-                  text-white font-medium break-words
-                `}
+                className={`py-2 md:py-3 px-3 md:px-4 rounded-lg text-left transition-all text-sm md:text-base ${selectedAnswer === null && gameActive ? 'bg-gray-700 hover:bg-gray-600 cursor-pointer' : 'bg-gray-600 cursor-not-allowed opacity-70'} text-white font-medium break-words`}
               >
                 <span className="font-bold">
                   {String.fromCharCode(65 + idx)}.
@@ -241,20 +256,44 @@ const Level1Page = () => {
         </div>
       </div>
 
-      {/* Bottom info - responsive */}
       <div className="bg-gray-800 p-2 md:p-3 text-center text-gray-300 text-xs md:text-sm border-t border-gray-700">
         Answer correctly to earn 10 points. Wrong answer or timeout loses 1
         health. First to {WIN_SCORE} points wins!
       </div>
 
-      {/* Win/Lose overlays (unchanged) */}
-      {winMessage && (
-        <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center z-10">
-          <div className="text-center text-white text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 p-6 md:p-8 rounded-2xl shadow-2xl mx-4">
-            {winMessage}
+      {/* Cashout / Continue Modal */}
+      {showCashoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full mx-4 border border-gray-700 shadow-2xl">
+            <h3 className="text-2xl font-bold text-white text-center mb-4">
+              Level 1 Complete!
+            </h3>
+            <p className="text-gray-300 text-center mb-4">
+              Your balance doubled to{' '}
+              <span className="text-green-400 font-bold">
+                ₦{newBalanceAfterWin.toLocaleString()}
+              </span>
+              .
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCashout}
+                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition"
+              >
+                Cashout
+              </button>
+              <button
+                onClick={handleContinue}
+                className="flex-1 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition"
+              >
+                Continue to Level 2
+              </button>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Game over overlay */}
       {!gameActive && !winMessage && health <= 0 && (
         <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center z-10">
           <div className="text-center text-red-500 text-xl md:text-2xl font-bold bg-gray-900 p-6 md:p-8 rounded-2xl border border-red-500 mx-4">

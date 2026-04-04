@@ -26,9 +26,9 @@ const Routes = () => {
       <Set wrap={MainLayout}>
         <Route path="/" page={HomePage} name="home" />
         <Route path="/add-funds" page={AddFundsPage} name="addFunds" />
+        <Route path="/add-funds/success" page={AddFundsPage} name="addFundsSuccess" /> {/* 👈 ADD THIS */}
         <Route path="/withdraw" page={WithdrawPage} name="withdraw" />
         <Route path="/game" page={GamePage} name="game" />
-
         {/* Game Levels */}
         <Route path="/level1" page={Level1Page} name="level1" />
         <Route path="/level2" page={Level2Page} name="level2" />

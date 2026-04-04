@@ -1,102 +1,71 @@
 // web/src/pages/AddFundsPage/AddFundsPage.tsx
-
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { navigate, routes } from '@redwoodjs/router'
 
+import {
+  getWalletBalance,
+  setWalletBalance,
+  getUnlockedLevel,
+  setUnlockedLevel,
+} from 'src/lib/levelHelpers'
+
+// REPLACE THIS WITH YOUR ACTUAL PAYSTACK PAYMENT PAGE LINK
+const PAYSTACK_PAYMENT_URL = 'https://paystack.shop/pay/planss1'
 const AddFundsPage = () => {
-  const [selectedPlan, setSelectedPlan] = useState<number | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const plans = [
-    { amount: 3000, label: 'Basic Plan', naira: '₦3,000' },
-    { amount: 7000, label: 'Standard Plan', naira: '₦7,000' },
-    { amount: 14000, label: 'Premium Plan', naira: '₦14,000' },
-  ]
+  // This runs when Paystack redirects back to our success URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const reference = urlParams.get('reference')
+    const trxref = urlParams.get('trxref')
+
+    if (reference && trxref && reference === trxref) {
+      // Payment successful
+      const currentBalance = getWalletBalance()
+      const newBalance = currentBalance + 3000
+      setWalletBalance(newBalance)
+
+      // Unlock Level 1 if not already unlocked
+      if (getUnlockedLevel() === 0) {
+        setUnlockedLevel(1)
+      }
+
+      alert('Payment successful! ₦3,000 added to your wallet.')
+      navigate(routes.home())
+    }
+  }, [])
 
   const handleAddFunds = () => {
-    if (!selectedPlan) return
-
     setIsProcessing(true)
-
-    // Get current wallet balance from localStorage
-    const currentBalanceStr = localStorage.getItem('veltrix_wallet_balance')
-    const currentBalance = currentBalanceStr ? parseFloat(currentBalanceStr) : 0
-
-    // Add selected plan amount
-    const newBalance = currentBalance + selectedPlan
-
-    // Save updated balance
-    localStorage.setItem('veltrix_wallet_balance', newBalance.toString())
-
-    // Simulate short delay to show "processing" (optional)
-    setTimeout(() => {
-      setIsProcessing(false)
-      // Redirect to Level 1 to start game
-      navigate(routes.level1())
-    }, 500)
+    // Redirect to Paystack payment page
+    window.location.href = PAYSTACK_PAYMENT_URL
   }
 
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-3xl font-bold text-white mb-2">Add Funds</h1>
       <p className="text-gray-400 mb-8">
-        Select a plan to add money to your wallet. You'll start from Level 1.
+        Add ₦3,000 to your wallet and start playing.
       </p>
 
-      {/* Plan Selection Cards */}
-      <div className="space-y-4 mb-8">
-        {plans.map((plan) => (
-          <div
-            key={plan.amount}
-            onClick={() => setSelectedPlan(plan.amount)}
-            className={`
-                cursor-pointer rounded-lg border-2 p-4 transition-all
-                ${
-                  selectedPlan === plan.amount
-                    ? 'border-purple-500 bg-purple-900/20'
-                    : 'border-gray-700 bg-gray-800 hover:border-gray-500'
-                }
-              `}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-semibold text-white">
-                  {plan.label}
-                </h3>
-                <p className="text-2xl font-bold text-green-400 mt-1">
-                  {plan.naira}
-                </p>
-              </div>
-              <div className="w-6 h-6 rounded-full border-2 flex items-center justify-center">
-                {selectedPlan === plan.amount && (
-                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-8">
+        <h3 className="text-xl font-semibold text-white">Basic Plan</h3>
+        <p className="text-3xl font-bold text-green-400 mt-2">₦3,000</p>
+        <p className="text-gray-400 mt-2">
+          One-time payment to unlock gameplay.
+        </p>
       </div>
 
-      {/* Add Funds Button */}
       <button
         onClick={handleAddFunds}
-        disabled={!selectedPlan || isProcessing}
-        className={`
-            w-full py-3 rounded-lg font-medium text-lg transition
-            ${
-              !selectedPlan || isProcessing
-                ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                : 'bg-purple-600 hover:bg-purple-700 text-white'
-            }
-          `}
+        disabled={isProcessing}
+        className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium text-lg transition disabled:bg-gray-600 disabled:cursor-not-allowed"
       >
-        {isProcessing
-          ? 'Processing...'
-          : `Add ${selectedPlan ? `₦${selectedPlan.toLocaleString()}` : 'Funds'}`}
+        {isProcessing ? 'Redirecting...' : 'Pay ₦3,000 with Paystack'}
       </button>
 
-      {/* Back to Dashboard Link */}
       <div className="mt-6 text-center">
         <a
           href="#"

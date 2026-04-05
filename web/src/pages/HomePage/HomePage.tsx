@@ -3,37 +3,30 @@ import { useEffect, useState } from 'react'
 
 import { Link, routes } from '@redwoodjs/router'
 
-// Helper functions
-const getWallet = () => {
-  const bal = localStorage.getItem('veltrix_wallet_balance')
-  return bal ? parseFloat(bal) : 0
-}
-const setWallet = (amount: number) => {
-  localStorage.setItem('veltrix_wallet_balance', amount.toString())
-}
-const getLevel = () => {
-  const level = localStorage.getItem('veltrix_unlocked_level')
-  return level ? parseInt(level) : 0
-}
-const setLevel = (level: number) => {
-  localStorage.setItem('veltrix_unlocked_level', level.toString())
-}
+import {
+  getWalletBalance,
+  setWalletBalance,
+  getUnlockedLevel,
+  setUnlockedLevel,
+  MIN_BALANCE_TO_PLAY,
+  canPlayAnyGame,
+  hasMinimumBalance,
+} from 'src/lib/levelHelpers'
 
 const HomePage = () => {
   const [balance, setBalance] = useState(0)
   const [unlocked, setUnlocked] = useState(0)
 
   const refresh = () => {
-    setBalance(getWallet())
-    setUnlocked(getLevel())
+    setBalance(getWalletBalance())
+    setUnlocked(getUnlockedLevel())
   }
 
-  // Add funds automatically when returning from Paystack
   const addFundsManually = () => {
-    const current = getWallet()
+    const current = getWalletBalance()
     const newBalance = current + 3000
-    setWallet(newBalance)
-    if (getLevel() === 0) setLevel(1)
+    setWalletBalance(newBalance)
+    if (getUnlockedLevel() === 0) setUnlockedLevel(1)
     refresh()
     alert(
       `Payment successful! ₦3,000 added. New balance: ₦${newBalance.toLocaleString()}`
@@ -42,22 +35,20 @@ const HomePage = () => {
 
   useEffect(() => {
     refresh()
-    // Check URL for payment reference (auto-add funds)
     const params = new URLSearchParams(window.location.search)
     const reference = params.get('reference')
     if (reference) {
-      // Prevent double processing on page refresh
       const processedKey = `processed_${reference}`
       if (!sessionStorage.getItem(processedKey)) {
         sessionStorage.setItem(processedKey, 'true')
         addFundsManually()
-        // Clean URL without reloading
         window.history.replaceState({}, '', window.location.pathname)
       }
     }
   }, [])
 
-  const canPlay = balance > 0 && unlocked > 0
+  const canPlay = canPlayAnyGame()
+  const hasMinBalance = hasMinimumBalance()
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -81,7 +72,22 @@ const HomePage = () => {
             Withdraw
           </Link>
         </div>
-        {!canPlay && <p className="text-red-400 mt-2">Add funds to play.</p>}
+        {balance === 0 && (
+          <p className="text-red-400 mt-2">
+            You need to add funds before playing.
+          </p>
+        )}
+        {balance > 0 && !hasMinBalance && (
+          <p className="text-red-400 mt-2">
+            You need at least ₦{MIN_BALANCE_TO_PLAY.toLocaleString()} to play.
+            Add more funds.
+          </p>
+        )}
+        {balance >= MIN_BALANCE_TO_PLAY && !canPlay && unlocked === 0 && (
+          <p className="text-red-400 mt-2">
+            Level 1 is locked. Add funds to unlock.
+          </p>
+        )}
       </div>
       <div className="bg-gray-800 rounded-lg p-6">
         <h2 className="text-xl font-semibold">Levels</h2>

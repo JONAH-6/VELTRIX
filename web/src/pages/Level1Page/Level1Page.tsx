@@ -9,9 +9,10 @@ import {
   getUnlockedLevel,
   setUnlockedLevel,
   isLevelUnlocked,
+  MIN_BALANCE_TO_PLAY,
 } from 'src/lib/levelHelpers'
 
-// ---------- Question Bank (same as before) ----------
+// ---------- Question Bank ----------
 const QUESTIONS = [
   {
     text: 'What is the capital of France?',
@@ -88,16 +89,18 @@ const Level1Page = () => {
   const [showCashoutModal, setShowCashoutModal] = useState(false)
   const [newBalanceAfterWin, setNewBalanceAfterWin] = useState(0)
 
-  // Betting: store the original balance before deduction
   const originalBalanceRef = useRef<number>(0)
 
   // ------------------- Betting logic on mount -------------------
   useEffect(() => {
-    // Check prerequisites
     const wallet = getWalletBalance()
     const unlocked = isLevelUnlocked(LEVEL_NUMBER)
-    if (wallet <= 0) {
-      alert('You need funds to play. Please add funds.')
+
+    // NEW: minimum balance check
+    if (wallet < MIN_BALANCE_TO_PLAY) {
+      alert(
+        `You need at least ₦${MIN_BALANCE_TO_PLAY.toLocaleString()} to play. Please add more funds.`
+      )
       navigate(routes.home())
       return
     }
@@ -107,12 +110,9 @@ const Level1Page = () => {
       return
     }
 
-    // Prevent double deduction on page refresh
+    // Prevent double deduction on refresh
     const sessionKey = `level_${LEVEL_NUMBER}_bet_deducted`
     if (sessionStorage.getItem(sessionKey)) {
-      // Bet already deducted for this session – just continue
-      originalBalanceRef.current = wallet * 2 // recover original? Actually we need to know original. We'll store it.
-      // Better: store original balance in sessionStorage too
       const storedOriginal = sessionStorage.getItem(
         `level_${LEVEL_NUMBER}_original_balance`
       )
@@ -128,7 +128,6 @@ const Level1Page = () => {
     setWalletBalance(newBalance)
     originalBalanceRef.current = currentBalance
 
-    // Store in sessionStorage to prevent re-deduction on refresh
     sessionStorage.setItem(sessionKey, 'true')
     sessionStorage.setItem(
       `level_${LEVEL_NUMBER}_original_balance`,
@@ -141,25 +140,17 @@ const Level1Page = () => {
     if (!gameActive) return
     setGameActive(false)
 
-    // Calculate winnings: we add back the bet + the original balance
     const original = originalBalanceRef.current
-    const current = getWalletBalance() // should be half of original after deduction
-    const winnings = original // because current is half, we need to add original to double
-    // Actually: current = original/2. To reach original*2, we add (original*1.5)
-    // But simpler: set new balance = original * 2
     const newBalance = original * 2
     setWalletBalance(newBalance)
     setNewBalanceAfterWin(newBalance)
 
-    // Unlock next level (Level 2)
     if (getUnlockedLevel() < LEVEL_NUMBER + 1) {
       setUnlockedLevel(LEVEL_NUMBER + 1)
     }
 
-    // Clear session storage so that next level can deduct properly
     sessionStorage.removeItem(`level_${LEVEL_NUMBER}_bet_deducted`)
     sessionStorage.removeItem(`level_${LEVEL_NUMBER}_original_balance`)
-
     setShowCashoutModal(true)
   }
 
@@ -177,12 +168,8 @@ const Level1Page = () => {
   const handleLose = () => {
     if (!gameActive) return
     setGameActive(false)
-
-    // On loss, the deducted half is already lost; no further action
-    // Clear session storage to allow retry
     sessionStorage.removeItem(`level_${LEVEL_NUMBER}_bet_deducted`)
     sessionStorage.removeItem(`level_${LEVEL_NUMBER}_original_balance`)
-
     setTimeout(() => navigate(routes.home()), 2000)
   }
 
@@ -272,7 +259,6 @@ const Level1Page = () => {
   // ------------------- Render -------------------
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-gray-900 to-gray-800">
-      {/* Header stats */}
       <div className="bg-black bg-opacity-50 backdrop-blur-sm p-2 md:p-4 flex flex-wrap justify-between gap-2 text-white font-mono text-sm md:text-lg border-b border-gray-700">
         <div className="bg-gray-800 px-2 md:px-4 py-1 rounded-full">
           Score: {score} / {WIN_SCORE}
@@ -285,7 +271,6 @@ const Level1Page = () => {
         </div>
       </div>
 
-      {/* Question area */}
       <div className="flex-1 flex flex-col items-center justify-center p-3 md:p-6">
         <div className="bg-gray-800 rounded-2xl p-4 md:p-6 w-full max-w-full md:max-w-2xl shadow-2xl border border-gray-700">
           <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 text-center break-words">
@@ -321,7 +306,6 @@ const Level1Page = () => {
         health. First to {WIN_SCORE} points wins!
       </div>
 
-      {/* Cashout / Continue Modal */}
       {showCashoutModal && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full mx-4 border border-gray-700 shadow-2xl">
@@ -353,7 +337,6 @@ const Level1Page = () => {
         </div>
       )}
 
-      {/* Game over overlay */}
       {!gameActive && !winMessage && health <= 0 && (
         <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center z-10">
           <div className="text-center text-red-500 text-xl md:text-2xl font-bold bg-gray-900 p-6 md:p-8 rounded-2xl border border-red-500 mx-4">

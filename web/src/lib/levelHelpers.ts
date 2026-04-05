@@ -1,5 +1,7 @@
 // web/src/lib/levelHelpers.ts
 
+export const MIN_BALANCE_TO_PLAY = 2500
+
 export const getWalletBalance = (): number => {
   const bal = localStorage.getItem('veltrix_wallet_balance')
   return bal ? parseFloat(bal) : 0
@@ -23,5 +25,9 @@ export const isLevelUnlocked = (level: number): boolean => {
 }
 
 export const canPlayAnyGame = (): boolean => {
-  return getWalletBalance() > 0 && getUnlockedLevel() > 0
+  return getWalletBalance() >= MIN_BALANCE_TO_PLAY && getUnlockedLevel() > 0
+}
+
+export const hasMinimumBalance = (): boolean => {
+  return getWalletBalance() >= MIN_BALANCE_TO_PLAY
 }

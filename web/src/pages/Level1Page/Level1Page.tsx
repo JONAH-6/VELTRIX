@@ -11,6 +11,7 @@ import {
   isLevelUnlocked,
 } from 'src/lib/levelHelpers'
 
+// ---------- Question Bank (same as before) ----------
 const QUESTIONS = [
   {
     text: 'What is the capital of France?',
@@ -69,6 +70,9 @@ const QUESTIONS = [
   },
 ]
 
+const LEVEL_NUMBER = 1
+const WIN_SCORE = 200
+
 const Level1Page = () => {
   const [score, setScore] = useState(0)
   const [health, setHealth] = useState(5)
@@ -84,30 +88,78 @@ const Level1Page = () => {
   const [showCashoutModal, setShowCashoutModal] = useState(false)
   const [newBalanceAfterWin, setNewBalanceAfterWin] = useState(0)
 
-  const WIN_SCORE = 200
+  // Betting: store the original balance before deduction
+  const originalBalanceRef = useRef<number>(0)
 
-  // Check prerequisites
+  // ------------------- Betting logic on mount -------------------
   useEffect(() => {
+    // Check prerequisites
     const wallet = getWalletBalance()
-    const unlocked = isLevelUnlocked(1)
+    const unlocked = isLevelUnlocked(LEVEL_NUMBER)
     if (wallet <= 0) {
       alert('You need funds to play. Please add funds.')
       navigate(routes.home())
-    } else if (!unlocked) {
-      alert('Level 1 is locked. You must add funds to unlock it.')
-      navigate(routes.home())
+      return
     }
+    if (!unlocked) {
+      alert(`Level ${LEVEL_NUMBER} is locked. Complete previous level first.`)
+      navigate(routes.home())
+      return
+    }
+
+    // Prevent double deduction on page refresh
+    const sessionKey = `level_${LEVEL_NUMBER}_bet_deducted`
+    if (sessionStorage.getItem(sessionKey)) {
+      // Bet already deducted for this session – just continue
+      originalBalanceRef.current = wallet * 2 // recover original? Actually we need to know original. We'll store it.
+      // Better: store original balance in sessionStorage too
+      const storedOriginal = sessionStorage.getItem(
+        `level_${LEVEL_NUMBER}_original_balance`
+      )
+      if (storedOriginal)
+        originalBalanceRef.current = parseFloat(storedOriginal)
+      return
+    }
+
+    // Deduct half of current balance as bet
+    const currentBalance = wallet
+    const bet = currentBalance / 2
+    const newBalance = currentBalance - bet
+    setWalletBalance(newBalance)
+    originalBalanceRef.current = currentBalance
+
+    // Store in sessionStorage to prevent re-deduction on refresh
+    sessionStorage.setItem(sessionKey, 'true')
+    sessionStorage.setItem(
+      `level_${LEVEL_NUMBER}_original_balance`,
+      currentBalance.toString()
+    )
   }, [])
 
+  // ------------------- Win handler -------------------
   const handleWin = () => {
     if (!gameActive) return
     setGameActive(false)
-    const currentBalance = getWalletBalance()
-    const newBalance = currentBalance * 2
+
+    // Calculate winnings: we add back the bet + the original balance
+    const original = originalBalanceRef.current
+    const current = getWalletBalance() // should be half of original after deduction
+    const winnings = original // because current is half, we need to add original to double
+    // Actually: current = original/2. To reach original*2, we add (original*1.5)
+    // But simpler: set new balance = original * 2
+    const newBalance = original * 2
     setWalletBalance(newBalance)
     setNewBalanceAfterWin(newBalance)
-    // Unlock Level 2
-    if (getUnlockedLevel() < 2) setUnlockedLevel(2)
+
+    // Unlock next level (Level 2)
+    if (getUnlockedLevel() < LEVEL_NUMBER + 1) {
+      setUnlockedLevel(LEVEL_NUMBER + 1)
+    }
+
+    // Clear session storage so that next level can deduct properly
+    sessionStorage.removeItem(`level_${LEVEL_NUMBER}_bet_deducted`)
+    sessionStorage.removeItem(`level_${LEVEL_NUMBER}_original_balance`)
+
     setShowCashoutModal(true)
   }
 
@@ -121,12 +173,20 @@ const Level1Page = () => {
     navigate(routes.level2())
   }
 
+  // ------------------- Lose handler -------------------
   const handleLose = () => {
     if (!gameActive) return
     setGameActive(false)
+
+    // On loss, the deducted half is already lost; no further action
+    // Clear session storage to allow retry
+    sessionStorage.removeItem(`level_${LEVEL_NUMBER}_bet_deducted`)
+    sessionStorage.removeItem(`level_${LEVEL_NUMBER}_original_balance`)
+
     setTimeout(() => navigate(routes.home()), 2000)
   }
 
+  // ------------------- Game logic (unchanged) -------------------
   const updateHealth = (delta: number) => {
     if (!gameActive) return
     const newHealth = Math.max(0, Math.min(5, health - delta))
@@ -141,7 +201,6 @@ const Level1Page = () => {
     if (newScore >= WIN_SCORE) handleWin()
   }
 
-  // Rest of quiz logic (nextQuestion, handleAnswer, timers) same as before
   const nextQuestion = () => {
     setSelectedAnswer(null)
     setFeedback('')
@@ -210,6 +269,7 @@ const Level1Page = () => {
 
   const question = QUESTIONS[currentQuestion]
 
+  // ------------------- Render -------------------
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-gray-900 to-gray-800">
       {/* Header stats */}
@@ -266,7 +326,7 @@ const Level1Page = () => {
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full mx-4 border border-gray-700 shadow-2xl">
             <h3 className="text-2xl font-bold text-white text-center mb-4">
-              Level 1 Complete!
+              Level {LEVEL_NUMBER} Complete!
             </h3>
             <p className="text-gray-300 text-center mb-4">
               Your balance doubled to{' '}

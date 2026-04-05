@@ -3,152 +3,113 @@ import { useEffect, useState } from 'react'
 
 import { Link, routes } from '@redwoodjs/router'
 
-import {
-  getWalletBalance,
-  setWalletBalance,
-  getUnlockedLevel,
-  setUnlockedLevel,
-  canPlayAnyGame,
-} from 'src/lib/levelHelpers'
+// Helper functions (direct in file to avoid import issues)
+const getWallet = () => {
+  const bal = localStorage.getItem('veltrix_wallet_balance')
+  return bal ? parseFloat(bal) : 0
+}
+const setWallet = (amount: number) => {
+  localStorage.setItem('veltrix_wallet_balance', amount.toString())
+}
+const getLevel = () => {
+  const level = localStorage.getItem('veltrix_unlocked_level')
+  return level ? parseInt(level) : 0
+}
+const setLevel = (level: number) => {
+  localStorage.setItem('veltrix_unlocked_level', level.toString())
+}
 
 const HomePage = () => {
-  const [walletBalance, setWalletBalanceState] = useState(0)
-  const [unlockedLevel, setUnlockedLevelState] = useState(0)
+  const [balance, setBalance] = useState(0)
+  const [unlocked, setUnlocked] = useState(0)
 
-  const refreshData = () => {
-    setWalletBalanceState(getWalletBalance())
-    setUnlockedLevelState(getUnlockedLevel())
+  const refresh = () => {
+    setBalance(getWallet())
+    setUnlocked(getLevel())
+    console.log('Balance:', getWallet(), 'Unlocked:', getLevel())
   }
 
-  // Detect payment success from URL
+  // Add funds manually (call this after payment)
+  const addFundsManually = () => {
+    const current = getWallet()
+    const newBalance = current + 3000
+    setWallet(newBalance)
+    if (getLevel() === 0) setLevel(1)
+    refresh()
+    alert(`₦3,000 added! New balance: ₦${newBalance.toLocaleString()}`)
+  }
+
+  // Test button to verify localStorage works
+  const testAdd = () => {
+    const current = getWallet()
+    setWallet(current + 3000)
+    if (getLevel() === 0) setLevel(1)
+    refresh()
+    alert(`Test: Added ₦3,000. New balance: ₦${getWallet().toLocaleString()}`)
+  }
+
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const reference = urlParams.get('reference')
-    const trxref = urlParams.get('trxref')
-    const paymentSuccess = urlParams.get('payment_success') === 'true'
-
-    if (paymentSuccess && reference && trxref && reference === trxref) {
-      const processedKey = `processed_${reference}`
-      if (sessionStorage.getItem(processedKey)) {
-        // Already processed, just clean URL
-        window.history.replaceState({}, '', window.location.pathname)
-        return
-      }
-      sessionStorage.setItem(processedKey, 'true')
-
-      // Add funds
-      const currentBalance = getWalletBalance()
-      const newBalance = currentBalance + 3000
-      setWalletBalance(newBalance)
-
-      // Unlock Level 1 if needed
-      if (getUnlockedLevel() === 0) {
-        setUnlockedLevel(1)
-      }
-
-      // Refresh UI
-      refreshData()
-      alert(
-        `Payment successful! ₦3,000 added. New balance: ₦${newBalance.toLocaleString()}`
-      )
-
-      // Remove query params from URL
+    refresh()
+    // Check URL for payment reference (optional auto-detect)
+    const params = new URLSearchParams(window.location.search)
+    const ref = params.get('reference')
+    if (ref) {
+      console.log('Payment reference found:', ref)
+      // Auto-add funds (optional – you can comment this out and rely on manual button)
+      addFundsManually()
+      // Clean URL
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
 
-  // Load on mount and storage changes
-  useEffect(() => {
-    refreshData()
-    window.addEventListener('storage', refreshData)
-    return () => window.removeEventListener('storage', refreshData)
-  }, [])
-
-  const clearBalance = () => {
-    localStorage.setItem('veltrix_wallet_balance', '0')
-    localStorage.setItem('veltrix_unlocked_level', '0')
-    refreshData()
-  }
-
-  const canPlay = canPlayAnyGame()
+  const canPlay = balance > 0 && unlocked > 0
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-        <p className="text-gray-400 mt-1">
-          Manage your funds and start playing
+      <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+      <div className="bg-gray-800 rounded-lg p-6 my-6">
+        <p className="text-gray-400">Wallet Balance</p>
+        <p className="text-4xl font-bold text-green-400">
+          ₦{balance.toLocaleString()}
         </p>
-      </div>
-
-      {/* Wallet Card */}
-      <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-8 border border-gray-700">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <p className="text-sm text-gray-400 uppercase tracking-wide">
-              Wallet Balance
-            </p>
-            <p className="text-4xl font-bold text-green-400">
-              ₦{walletBalance.toLocaleString()}
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Link
-              to={routes.addFunds()}
-              className="px-5 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition"
-            >
-              Add Funds
-            </Link>
-            <Link
-              to={routes.withdraw()}
-              className="px-5 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition"
-            >
-              Withdraw
-            </Link>
-            <button
-              onClick={refreshData}
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition"
-            >
-              Refresh Balance
-            </button>
-            <button
-              onClick={clearBalance}
-              className="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition"
-            >
-              Clear Balance
-            </button>
-          </div>
+        <div className="flex flex-wrap gap-3 mt-4">
+          <Link
+            to={routes.addFunds()}
+            className="px-4 py-2 bg-purple-600 rounded"
+          >
+            Pay with Paystack
+          </Link>
+          <Link
+            to={routes.withdraw()}
+            className="px-4 py-2 bg-gray-700 rounded"
+          >
+            Withdraw
+          </Link>
+          <button onClick={refresh} className="px-4 py-2 bg-blue-600 rounded">
+            Refresh
+          </button>
+          <button
+            onClick={addFundsManually}
+            className="px-4 py-2 bg-green-600 rounded"
+          >
+            Confirm Payment
+          </button>
+          <button onClick={testAdd} className="px-4 py-2 bg-yellow-600 rounded">
+            Test Add ₦3000
+          </button>
         </div>
-        {!canPlay && (
-          <p className="text-red-400 text-sm mt-2">
-            You need to add funds before playing.
-          </p>
-        )}
+        {!canPlay && <p className="text-red-400 mt-2">Add funds to play.</p>}
       </div>
-
-      {/* Game Info Card */}
-      <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
-        <h2 className="text-xl font-semibold text-white mb-3">How to Play</h2>
-        <ul className="list-disc list-inside text-gray-300 space-y-2">
-          <li>Add ₦3,000 to start playing.</li>
-          <li>You must beat Level 1 to unlock Level 2, etc.</li>
-          <li>Each level you beat doubles your wallet balance.</li>
-          <li>
-            After winning, you can choose to cash out or continue to next level.
-          </li>
-        </ul>
-        <div className="mt-6 flex flex-wrap gap-3">
+      <div className="bg-gray-800 rounded-lg p-6">
+        <h2 className="text-xl font-semibold">Levels</h2>
+        <div className="flex gap-3 mt-4 flex-wrap">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((level) => {
-            const enabled = canPlay && level <= unlockedLevel
+            const enabled = canPlay && level <= unlocked
             return (
               <Link
                 key={level}
                 to={routes[`level${level}`]()}
-                className={`px-4 py-2 rounded-lg font-medium transition ${
-                  enabled
-                    ? 'bg-blue-600 hover:bg-blue-700'
-                    : 'bg-gray-600 cursor-not-allowed pointer-events-none opacity-50'
-                }`}
+                className={`px-4 py-2 rounded ${enabled ? 'bg-blue-600' : 'bg-gray-600 pointer-events-none opacity-50'}`}
               >
                 Level {level}
               </Link>

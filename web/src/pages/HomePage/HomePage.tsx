@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 
 import { Link, routes } from '@redwoodjs/router'
 
-// Helper functions (direct in file to avoid import issues)
+// Helper functions
 const getWallet = () => {
   const bal = localStorage.getItem('veltrix_wallet_balance')
   return bal ? parseFloat(bal) : 0
@@ -26,39 +26,34 @@ const HomePage = () => {
   const refresh = () => {
     setBalance(getWallet())
     setUnlocked(getLevel())
-    console.log('Balance:', getWallet(), 'Unlocked:', getLevel())
   }
 
-  // Add funds manually (call this after payment)
+  // Add funds automatically when returning from Paystack
   const addFundsManually = () => {
     const current = getWallet()
     const newBalance = current + 3000
     setWallet(newBalance)
     if (getLevel() === 0) setLevel(1)
     refresh()
-    alert(`₦3,000 added! New balance: ₦${newBalance.toLocaleString()}`)
-  }
-
-  // Test button to verify localStorage works
-  const testAdd = () => {
-    const current = getWallet()
-    setWallet(current + 3000)
-    if (getLevel() === 0) setLevel(1)
-    refresh()
-    alert(`Test: Added ₦3,000. New balance: ₦${getWallet().toLocaleString()}`)
+    alert(
+      `Payment successful! ₦3,000 added. New balance: ₦${newBalance.toLocaleString()}`
+    )
   }
 
   useEffect(() => {
     refresh()
-    // Check URL for payment reference (optional auto-detect)
+    // Check URL for payment reference (auto-add funds)
     const params = new URLSearchParams(window.location.search)
-    const ref = params.get('reference')
-    if (ref) {
-      console.log('Payment reference found:', ref)
-      // Auto-add funds (optional – you can comment this out and rely on manual button)
-      addFundsManually()
-      // Clean URL
-      window.history.replaceState({}, '', window.location.pathname)
+    const reference = params.get('reference')
+    if (reference) {
+      // Prevent double processing on page refresh
+      const processedKey = `processed_${reference}`
+      if (!sessionStorage.getItem(processedKey)) {
+        sessionStorage.setItem(processedKey, 'true')
+        addFundsManually()
+        // Clean URL without reloading
+        window.history.replaceState({}, '', window.location.pathname)
+      }
     }
   }, [])
 
@@ -75,28 +70,16 @@ const HomePage = () => {
         <div className="flex flex-wrap gap-3 mt-4">
           <Link
             to={routes.addFunds()}
-            className="px-4 py-2 bg-purple-600 rounded"
+            className="px-4 py-2 bg-purple-600 rounded hover:bg-purple-700"
           >
             Pay with Paystack
           </Link>
           <Link
             to={routes.withdraw()}
-            className="px-4 py-2 bg-gray-700 rounded"
+            className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
           >
             Withdraw
           </Link>
-          <button onClick={refresh} className="px-4 py-2 bg-blue-600 rounded">
-            Refresh
-          </button>
-          <button
-            onClick={addFundsManually}
-            className="px-4 py-2 bg-green-600 rounded"
-          >
-            Confirm Payment
-          </button>
-          <button onClick={testAdd} className="px-4 py-2 bg-yellow-600 rounded">
-            Test Add ₦3000
-          </button>
         </div>
         {!canPlay && <p className="text-red-400 mt-2">Add funds to play.</p>}
       </div>
@@ -109,7 +92,7 @@ const HomePage = () => {
               <Link
                 key={level}
                 to={routes[`level${level}`]()}
-                className={`px-4 py-2 rounded ${enabled ? 'bg-blue-600' : 'bg-gray-600 pointer-events-none opacity-50'}`}
+                className={`px-4 py-2 rounded ${enabled ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 pointer-events-none opacity-50'}`}
               >
                 Level {level}
               </Link>

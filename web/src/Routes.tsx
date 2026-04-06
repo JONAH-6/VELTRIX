@@ -9,6 +9,7 @@ import AddFundsPage from 'src/pages/AddFundsPage/AddFundsPage'
 import AddFundsSuccessPage from 'src/pages/AddFundsSuccessPage/AddFundsSuccessPage'
 import GamePage from 'src/pages/GamePage/GamePage'
 import HomePage from 'src/pages/HomePage/HomePage'
+import LandingHomePage from 'src/pages/LandingHomePage/LandingHomePage'
 import Level1Page from 'src/pages/Level1Page/Level1Page'
 import Level2Page from 'src/pages/Level2Page/Level2Page'
 import Level3Page from 'src/pages/Level3Page/Level3Page'
@@ -23,14 +24,17 @@ import WithdrawPage from 'src/pages/WithdrawPage/WithdrawPage'
 const Routes = () => {
   return (
     <Router>
-      {/* All main pages use MainLayout */}
+      {/* Public landing page – no layout */}
+      <Route path="/" page={LandingHomePage} name="landingHome" />
+
+      {/* Authenticated / main app pages with sidebar layout */}
       <Set wrap={MainLayout}>
-        <Route path="/" page={HomePage} name="home" />
-        <Route path="/add-funds-success" page={AddFundsSuccessPage} name="addFundsSuccess" />
+        <Route path="/dashboard" page={HomePage} name="home" />
         <Route path="/add-funds" page={AddFundsPage} name="addFunds" />
-        <Route path="/add-funds/success" page={AddFundsPage} name="addFundsSuccess" /> {/* 👈 ADD THIS */}
+        <Route path="/add-funds/success" page={AddFundsSuccessPage} name="addFundsSuccess" />
         <Route path="/withdraw" page={WithdrawPage} name="withdraw" />
         <Route path="/game" page={GamePage} name="game" />
+
         {/* Game Levels */}
         <Route path="/level1" page={Level1Page} name="level1" />
         <Route path="/level2" page={Level2Page} name="level2" />

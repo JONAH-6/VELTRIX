@@ -17,84 +17,469 @@ const MIN_BALANCE_LEVEL_3 = 10000
 // Very hard questions with tricky options
 const QUESTIONS = [
   {
-    text: 'Which of these is NOT a primary color?',
-    options: ['Red', 'Yellow', 'Blue', 'Green'],
-    correct: 3,
-  },
-  {
-    text: 'What is the smallest country in the world by area?',
-    options: ['Monaco', 'San Marino', 'Vatican City', 'Malta'],
-    correct: 2,
-  },
-  {
-    text: 'Which planet has the most moons?',
-    options: ['Jupiter', 'Saturn', 'Uranus', 'Neptune'],
-    correct: 1,
-  },
-  {
-    text: "Who wrote 'The Odyssey'?",
-    options: ['Sophocles', 'Euripides', 'Homer', 'Aristophanes'],
-    correct: 2,
-  },
-  {
-    text: 'What is the chemical symbol for Gold?',
-    options: ['Go', 'Gd', 'Au', 'Ag'],
-    correct: 2,
-  },
-  {
-    text: 'Which of these is a mammal?',
-    options: ['Penguin', 'Ostrich', 'Dolphin', 'Shark'],
-    correct: 2,
-  },
-  {
-    text: 'What is the longest bone in the human body?',
-    options: ['Femur', 'Tibia', 'Fibula', 'Humerus'],
+    text: 'What happens immediately after takeoff?',
+    options: [
+      'The pilot climbs to a safe altitude',
+      'The pilot retracts flaps',
+      'The pilot contacts ATC',
+      'The pilot increases speed',
+    ],
     correct: 0,
   },
   {
-    text: 'Which language has the most native speakers?',
-    options: ['English', 'Spanish', 'Mandarin Chinese', 'Hindi'],
-    correct: 2,
-  },
-  {
-    text: "Who painted 'Starry Night'?",
-    options: ['Picasso', 'Van Gogh', 'Monet', 'Rembrandt'],
-    correct: 1,
-  },
-  {
-    text: 'What is the capital of Canada?',
-    options: ['Toronto', 'Vancouver', 'Montreal', 'Ottawa'],
-    correct: 3,
-  },
-  {
-    text: 'Which of these is not a type of cloud?',
-    options: ['Cumulus', 'Stratus', 'Nimbus', 'Tornadus'],
-    correct: 3,
-  },
-  {
-    text: 'What is the square root of 144?',
-    options: ['11', '12', '13', '14'],
-    correct: 1,
-  },
-  {
-    text: 'Who discovered penicillin?',
+    text: 'What is “climb”?',
     options: [
-      'Marie Curie',
-      'Alexander Fleming',
-      'Louis Pasteur',
-      'Edward Jenner',
+      'Gaining altitude after takeoff',
+      'Losing altitude',
+      'Maintaining altitude',
+      'Turning left',
     ],
-    correct: 1,
+    correct: 0,
   },
   {
-    text: 'Which country is known as the Land of the Rising Sun?',
-    options: ['China', 'Korea', 'Japan', 'Thailand'],
-    correct: 2,
+    text: 'When does a pilot retract landing gear?',
+    options: [
+      'Shortly after takeoff',
+      'During takeoff roll',
+      'At cruise altitude',
+      'Before landing',
+    ],
+    correct: 0,
   },
   {
-    text: 'What is the main ingredient in hummus?',
-    options: ['Lentils', 'Chickpeas', 'Black beans', 'Soybeans'],
-    correct: 1,
+    text: 'Why retract landing gear?',
+    options: [
+      'To reduce drag',
+      'To save fuel',
+      'To increase speed',
+      'To improve stability',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is flap retraction?',
+    options: [
+      'Pulling back flaps after takeoff',
+      'Extending flaps',
+      'Adjusting ailerons',
+      'Setting trim',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Why are flaps used during takeoff?',
+    options: [
+      'To increase lift',
+      'To decrease lift',
+      'To reduce drag',
+      'To improve engine performance',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is cruise altitude?',
+    options: [
+      'Level where plane flies steadily',
+      'Maximum altitude',
+      'Minimum safe altitude',
+      'Takeoff altitude',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is cruising?',
+    options: [
+      'Flying at constant speed and altitude',
+      'Descending',
+      'Climbing',
+      'Taxiing',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What does the autopilot do?',
+    options: [
+      'Helps control the aircraft automatically',
+      'Navigates the aircraft',
+      'Communicates with ATC',
+      'Monitors engine performance',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'When is autopilot usually activated?',
+    options: [
+      'After reaching safe altitude',
+      'During takeoff',
+      'During landing',
+      'Before engine start',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What instruments help pilots in the air?',
+    options: [
+      'Flight instruments',
+      'GPS only',
+      'Radar only',
+      'Visual references',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is altitude?',
+    options: [
+      'Height above ground',
+      'Speed through air',
+      'Direction of travel',
+      'Distance to destination',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is airspeed?',
+    options: [
+      'Speed through the air',
+      'Speed over ground',
+      'Engine speed',
+      'Climb rate',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is heading?',
+    options: [
+      'Direction the plane is going',
+      'Altitude',
+      'Airspeed',
+      'Vertical speed',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is turbulence?',
+    options: [
+      'Rough air movement',
+      'Engine vibration',
+      'Wing stall',
+      'Runway roughness',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What do pilots do in turbulence?',
+    options: [
+      'Maintain control and reduce speed',
+      'Increase speed',
+      'Climb higher',
+      'Descend quickly',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Is turbulence dangerous?',
+    options: [
+      'Usually not, but uncomfortable',
+      'Always dangerous',
+      'Only at night',
+      'Only over water',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is cabin pressure?',
+    options: [
+      'Air pressure inside aircraft',
+      'Outside air pressure',
+      'Fuel pressure',
+      'Hydraulic pressure',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Why is cabin pressure important?',
+    options: [
+      'Helps passengers breathe normally',
+      'Improves engine performance',
+      'Reduces noise',
+      'Increases speed',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What happens if cabin pressure fails?',
+    options: [
+      'Oxygen masks deploy',
+      'Engines stop',
+      'Lights go out',
+      'Plane descends automatically',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is a bird strike?',
+    options: [
+      'Collision between bird and aircraft',
+      'Bird flying near airport',
+      'Bird ingestion into engine',
+      'Bird on runway',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'When are bird strikes most common?',
+    options: [
+      'During takeoff and landing',
+      'At cruise altitude',
+      'At night',
+      'In winter',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Why are bird strikes dangerous?',
+    options: [
+      'Can damage engines or windshield',
+      'Cause noise',
+      'Distract pilots',
+      'Reduce visibility',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What happens if a bird hits the engine?',
+    options: [
+      'Engine may lose power or fail',
+      'Engine stops immediately',
+      'Engine catches fire',
+      'Engine over speeds',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What must pilots do after a bird strike?',
+    options: [
+      'Assess damage and possibly land',
+      'Continue flight',
+      'Declare emergency only if severe',
+      'Ignore if minor',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Can planes survive bird strikes?',
+    options: [
+      'Yes, most are designed to',
+      'No, always critical',
+      'Only small planes',
+      'Only large planes',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What famous bird strike incident involved water landing?',
+    options: [
+      'US Airways Flight 1549',
+      'TACA Flight 110',
+      'Hudson River landing',
+      'Miracle on the Hudson',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Who safely landed that aircraft?',
+    options: [
+      'Chesley Sullenberger',
+      'Richard Bong',
+      'Charles Lindbergh',
+      'Amelia Earhart',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is engine failure?',
+    options: [
+      'Engine stops working',
+      'Engine loses power partially',
+      'Engine over heats',
+      'Engine surges',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Can a plane glide without engines?',
+    options: ['Yes', 'No', 'Only with tailwind', 'Only at low altitude'],
+    correct: 0,
+  },
+  {
+    text: 'What is rain effect on flying?',
+    options: [
+      'Reduces visibility',
+      'Increases speed',
+      'Improves engine performance',
+      'Reduces drag',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Does rain stop planes from flying?',
+    options: ['Usually no', 'Yes always', 'Only heavy rain', 'Only at night'],
+    correct: 0,
+  },
+  {
+    text: 'What is heavy rain called in aviation concern?',
+    options: ['Severe weather', 'Thunderstorm', 'Downpour', 'Monsoon'],
+    correct: 0,
+  },
+  {
+    text: 'What is windscreen wiper used for?',
+    options: [
+      'Clear rain from cockpit window',
+      'Clear ice',
+      'Clean windshield',
+      'Defog windows',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is hydroplaning?',
+    options: [
+      'Sliding on wet runway',
+      'Flying through rain',
+      'Engine water ingestion',
+      'Wing icing',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'When does hydroplaning happen?',
+    options: [
+      'During landing in heavy rain',
+      'During takeoff',
+      'During taxi',
+      'At cruise',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is lightning risk in flight?',
+    options: [
+      'Aircraft can be struck',
+      'Engines may fail',
+      'Instruments may fail',
+      'Radar may be damaged',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Are planes protected from lightning?',
+    options: ['Yes', 'No', 'Only metal planes', 'Only composite planes'],
+    correct: 0,
+  },
+  {
+    text: 'What happens if lightning hits a plane?',
+    options: [
+      'Usually no serious damage',
+      'Plane crashes',
+      'Electronics fail',
+      'Engine stops',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is storm avoidance?',
+    options: [
+      'Flying around bad weather',
+      'Flying through storms',
+      'Climbing above storms',
+      'Descending below storms',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What tool helps detect storms?',
+    options: ['Weather radar', 'GPS', 'ATC', 'Transponder'],
+    correct: 0,
+  },
+  {
+    text: 'What is cloud flying called?',
+    options: [
+      'Instrument flight',
+      'Visual flight',
+      'Cloud flying',
+      'IMC flying',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Why is visibility important in rain?',
+    options: [
+      'Helps pilots see surroundings',
+      'Reduces speed',
+      'Increases safety',
+      'Improves navigation',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is icing?',
+    options: [
+      'Ice forming on aircraft',
+      'Engine icing',
+      'Wing icing',
+      'Fuel icing',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Why is icing dangerous?',
+    options: [
+      'Reduces lift',
+      'Increases drag',
+      'Adds weight',
+      'All of the above',
+    ],
+    correct: 3,
+  },
+  {
+    text: 'How do planes fight icing?',
+    options: [
+      'De-icing systems',
+      'Climbing higher',
+      'Descending',
+      'Increasing speed',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is descent?',
+    options: ['Going down toward landing', 'Climbing', 'Cruising', 'Taxiing'],
+    correct: 0,
+  },
+  {
+    text: 'When does descent begin?',
+    options: [
+      'Before landing',
+      'After takeoff',
+      'At cruise',
+      'During emergency',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is approach?',
+    options: [
+      'Final path to runway',
+      'Takeoff path',
+      'Taxi path',
+      'Climb path',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is the most important rule in flight?',
+    options: ['Safety first', 'Speed', 'Fuel efficiency', 'Passenger comfort'],
+    correct: 0,
   },
 ]
 

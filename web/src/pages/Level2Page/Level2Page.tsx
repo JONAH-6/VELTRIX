@@ -18,102 +18,486 @@ const MIN_BALANCE_LEVEL_2 = 5000
 // Harder question bank
 const QUESTIONS = [
   {
-    text: 'What is the longest river in the world?',
-    options: ['Amazon', 'Nile', 'Yangtze', 'Mississippi'],
-    correct: 1,
-  },
-  {
-    text: "Which element has the chemical symbol 'O'?",
-    options: ['Gold', 'Oxygen', 'Osmium', 'Hydrogen'],
-    correct: 1,
-  },
-  {
-    text: 'Who developed the theory of relativity?',
+    text: 'What is the first step to becoming a pilot?',
     options: [
-      'Isaac Newton',
-      'Galileo Galilei',
-      'Albert Einstein',
-      'Nikola Tesla',
-    ],
-    correct: 2,
-  },
-  {
-    text: 'What is the smallest prime number?',
-    options: ['0', '1', '2', '3'],
-    correct: 2,
-  },
-  {
-    text: 'Which country is home to the kangaroo?',
-    options: ['New Zealand', 'South Africa', 'Australia', 'Brazil'],
-    correct: 2,
-  },
-  {
-    text: 'Who painted the Sistine Chapel ceiling?',
-    options: ['Leonardo da Vinci', 'Michelangelo', 'Raphael', 'Donatello'],
-    correct: 1,
-  },
-  {
-    text: 'What is the capital of Japan?',
-    options: ['Seoul', 'Beijing', 'Tokyo', 'Bangkok'],
-    correct: 2,
-  },
-  {
-    text: "Which planet is known as the 'Morning Star'?",
-    options: ['Mars', 'Venus', 'Mercury', 'Jupiter'],
-    correct: 1,
-  },
-  {
-    text: "Who wrote '1984'?",
-    options: [
-      'Aldous Huxley',
-      'George Orwell',
-      'Ray Bradbury',
-      'Ernest Hemingway',
-    ],
-    correct: 1,
-  },
-  {
-    text: 'What is the hardest known natural material?',
-    options: ['Iron', 'Titanium', 'Diamond', 'Graphite'],
-    correct: 2,
-  },
-  {
-    text: 'Which ocean is the deepest?',
-    options: ['Atlantic', 'Indian', 'Arctic', 'Pacific'],
-    correct: 3,
-  },
-  {
-    text: 'What is the main ingredient in guacamole?',
-    options: ['Tomato', 'Onion', 'Avocado', 'Lime'],
-    correct: 2,
-  },
-  {
-    text: "Which famous physicist wrote 'A Brief History of Time'?",
-    options: [
-      'Stephen Hawking',
-      'Richard Feynman',
-      'Carl Sagan',
-      'Brian Greene',
+      'Learning basic aviation theory',
+      'Flying solo',
+      'Passing a medical exam',
+      'Buying a plane',
     ],
     correct: 0,
   },
   {
-    text: 'What is the currency of the United Kingdom?',
-    options: ['Euro', 'Dollar', 'Pound Sterling', 'Yen'],
-    correct: 2,
+    text: 'What license do beginners usually start with?',
+    options: [
+      'Private Pilot License (PPL)',
+      'Commercial Pilot License (CPL)',
+      'Airline Transport Pilot License (ATPL)',
+      'Student Pilot Permit',
+    ],
+    correct: 0,
   },
   {
-    text: "Who directed the movie 'Inception'?",
+    text: 'What is a PPL?',
     options: [
-      'James Cameron',
-      'Steven Spielberg',
-      'Christopher Nolan',
-      'Quentin Tarantino',
+      'A license that allows you to fly for personal use',
+      'A type of aircraft',
+      'A flight simulator',
+      'An air traffic control certificate',
     ],
-    correct: 2,
+    correct: 0,
+  },
+  {
+    text: 'What subject teaches how planes fly?',
+    options: ['Aerodynamics', 'Meteorology', 'Navigation', 'Aircraft systems'],
+    correct: 0,
+  },
+  {
+    text: 'What must you pass before flying solo?',
+    options: [
+      'Ground school exams',
+      'A checkride',
+      'A night flight',
+      'Instrument rating',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is ground school?',
+    options: [
+      'Classroom training about aviation',
+      'Practical flying lessons',
+      'Simulator training',
+      'Aircraft maintenance course',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is the minimum age to start pilot training (in many countries)?',
+    options: ['Around 16–18 years', '14 years', '21 years', '25 years'],
+    correct: 0,
+  },
+  {
+    text: 'What medical check is required?',
+    options: [
+      'Aviation medical exam',
+      'General physical',
+      'Eye test only',
+      'Blood test',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Who conducts flight training?',
+    options: [
+      'A certified flight instructor',
+      'Air traffic controller',
+      'Airline captain',
+      'Mechanic',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is the first thing you learn in flight?',
+    options: [
+      'Basic aircraft control',
+      'Navigation',
+      'Emergency procedures',
+      'Crosswind landings',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is “taxiing”?',
+    options: [
+      'Moving the plane on the ground',
+      'Taking off',
+      'Landing',
+      'Climbing to altitude',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is takeoff?',
+    options: [
+      'Lifting the plane into the air',
+      'Parking the aircraft',
+      'Engine start',
+      'Taxiing to runway',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is landing?',
+    options: [
+      'Bringing the plane safely back to ground',
+      'Taking off',
+      'Cruising',
+      'Descending',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is a pre-flight check?',
+    options: [
+      'Inspecting the aircraft before flying',
+      'Checking weather',
+      'Filing a flight plan',
+      'Passenger briefing',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Why are pre-flight checks important?',
+    options: [
+      'To ensure safety',
+      'To save fuel',
+      'To reduce noise',
+      'To comply with regulations',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is the cockpit?',
+    options: [
+      'Where the pilot controls the plane',
+      'Passenger cabin',
+      'Cargo hold',
+      'Engine compartment',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What does the control yoke or stick do?',
+    options: [
+      'Controls pitch and roll',
+      'Controls yaw',
+      'Controls throttle',
+      'Controls flaps',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What do rudder pedals control?',
+    options: ['Yaw (left and right movement)', 'Pitch', 'Roll', 'Brakes'],
+    correct: 0,
+  },
+  {
+    text: 'What is throttle?',
+    options: [
+      'Controls engine power',
+      'Controls direction',
+      'Controls altitude',
+      'Controls speed brakes',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is a checklist?',
+    options: [
+      'Step-by-step safety procedure',
+      'Aircraft registration',
+      'Flight log',
+      'Maintenance record',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is “solo flight”?',
+    options: [
+      'First time flying alone',
+      'Flying with an instructor',
+      'Night flight',
+      'Cross‑country flight',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'When can a student fly solo?',
+    options: [
+      'After instructor approval',
+      'After passing a written test',
+      'After 10 hours of flight',
+      'At age 18',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is flight time?',
+    options: [
+      'Hours spent flying',
+      'Time on the ground',
+      'Time in simulator',
+      'Time in briefings',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'How many hours are needed for PPL (approx)?',
+    options: ['About 40–50 hours', '10–20 hours', '100 hours', '200 hours'],
+    correct: 0,
+  },
+  {
+    text: 'What is navigation training?',
+    options: [
+      'Learning how to find your way in the air',
+      'Learning how to land',
+      'Learning emergency procedures',
+      'Learning aircraft systems',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What tools help navigation?',
+    options: [
+      'Maps, GPS, instruments',
+      'Radar',
+      'ATC',
+      'Visual references only',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is airspace?',
+    options: [
+      'Controlled areas in the sky',
+      'Aircraft parking areas',
+      'Runway zones',
+      'Weather zones',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is ATC?',
+    options: [
+      'Air Traffic Control',
+      'Automatic Terminal Control',
+      'Aircraft Tracking Computer',
+      'Altitude Control',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What does ATC do?',
+    options: [
+      'Guides aircraft safely',
+      'Sells tickets',
+      'Maintains planes',
+      'Provides weather forecasts',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is radio communication?',
+    options: [
+      'Talking with ATC and other pilots',
+      'Listening to music',
+      'Broadcasting weather',
+      'Navigation using radio beacons',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is a flight plan?',
+    options: [
+      'Planned route before flying',
+      'Aircraft log',
+      'Maintenance schedule',
+      'Passenger manifest',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is weather briefing?',
+    options: [
+      'Checking weather before flight',
+      'Briefing passengers',
+      'Aircraft inspection',
+      'Flight plan filing',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Why is weather important?',
+    options: [
+      'It affects safety',
+      'It determines fuel stops',
+      'It changes flight time',
+      'It affects passenger comfort',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is visibility?',
+    options: [
+      'How far you can see',
+      'How high you can fly',
+      'How fast you can go',
+      'How clear the air is',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is turbulence?',
+    options: [
+      'Unstable air movement',
+      'Engine vibration',
+      'Wing stall',
+      'Runway roughness',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is stall training?',
+    options: [
+      'Learning how to recover from loss of lift',
+      'Learning how to land',
+      'Learning how to take off',
+      'Learning how to taxi',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is emergency training?',
+    options: [
+      'Handling dangerous situations',
+      'Normal takeoff procedures',
+      'Passenger service',
+      'Fuel management',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is engine failure practice?',
+    options: [
+      'Training for engine stopping mid‑air',
+      'Engine start procedures',
+      'Oil change',
+      'Throttle calibration',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is crosswind landing?',
+    options: [
+      'Landing with side wind',
+      'Landing with headwind',
+      'Landing with tailwind',
+      'Landing on a wet runway',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is night flying?',
+    options: [
+      'Flying after sunset',
+      'Flying in clouds',
+      'Flying at high altitude',
+      'Flying without instruments',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is instrument flying?',
+    options: [
+      'Flying using instruments only',
+      'Flying with a GPS',
+      'Flying in good weather',
+      'Flying manually',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What license comes after PPL?',
+    options: [
+      'Commercial Pilot License (CPL)',
+      'Airline Transport Pilot License (ATPL)',
+      'Instrument Rating (IR)',
+      'Multi‑engine Rating',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is CPL?',
+    options: [
+      'License to earn money flying',
+      'License to fly at night',
+      'License to fly internationally',
+      'License to fly jets',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is simulator training?',
+    options: [
+      'Practice using flight simulators',
+      'Actual aircraft training',
+      'Ground school',
+      'Emergency drills',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'Why use simulators?',
+    options: [
+      'Safe and realistic training',
+      'Cheaper than real aircraft',
+      'No fuel costs',
+      'All of the above',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is logbook?',
+    options: [
+      'Record of flight hours',
+      'Aircraft manual',
+      "Pilot's diary",
+      'Maintenance log',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is checkride?',
+    options: [
+      'Final test with examiner',
+      'Aircraft inspection',
+      'Pre‑flight check',
+      'Medical exam',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What must you pass to get a license?',
+    options: [
+      'Written + flight exam',
+      'Only flight exam',
+      'Only written exam',
+      'Medical exam',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What skill is most important for pilots?',
+    options: [
+      'Decision‑making',
+      'Physical strength',
+      'Good memory',
+      'Fast reflexes',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is the final goal of pilot training?',
+    options: [
+      'Safe and confident flying',
+      'Earning a lot of money',
+      'Flying fast jets',
+      'Travelling the world',
+    ],
+    correct: 0,
   },
 ]
-
 const LEVEL_NUMBER = 2
 const WIN_SCORE = 200
 const QUESTION_TIME_SEC = 8 // 8 seconds per question

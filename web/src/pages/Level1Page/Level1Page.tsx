@@ -15,59 +15,374 @@ import {
 // ---------- Question Bank ----------
 const QUESTIONS = [
   {
-    text: 'What is the capital of France?',
-    options: ['Berlin', 'Madrid', 'Paris', 'Lisbon'],
-    correct: 2,
+    text: 'Who achieved the first controlled powered flight (1903)?',
+    options: [
+      'Otto Lilienthal',
+      'The Wright brothers',
+      'George Cayley',
+      'Alberto Santos-Dumont',
+    ],
+    correct: 1,
   },
   {
-    text: 'Which planet is known as the Red Planet?',
-    options: ['Mars', 'Jupiter', 'Venus', 'Saturn'],
+    text: 'What did early pioneers use before engines?',
+    options: ['Hot air balloons', 'Gliders', 'Kites', 'Rockets'],
+    correct: 1,
+  },
+  {
+    text: 'Who studied bird wings and inspired modern aviation?',
+    options: [
+      'Leonardo da Vinci',
+      'Otto Lilienthal',
+      'George Cayley',
+      'Wilbur Wright',
+    ],
+    correct: 1,
+  },
+  {
+    text: "What was the Wrights' first airplane called?",
+    options: ['Wright Flyer', 'Kitty Hawk', 'Flyer 1', 'Wright Glider'],
     correct: 0,
   },
   {
-    text: 'Who painted the Mona Lisa?',
-    options: ['Van Gogh', 'Picasso', 'Da Vinci', 'Rembrandt'],
-    correct: 2,
+    text: 'Which war accelerated early aircraft development?',
+    options: ['World War I', 'World War II', 'Korean War', 'Civil War'],
+    correct: 0,
   },
   {
-    text: 'What is the largest ocean on Earth?',
-    options: ['Atlantic', 'Indian', 'Arctic', 'Pacific'],
-    correct: 3,
-  },
-  {
-    text: 'Which year did World War II end?',
-    options: ['1943', '1944', '1945', '1946'],
-    correct: 2,
-  },
-  {
-    text: 'What is the square root of 64?',
-    options: ['6', '7', '8', '9'],
-    correct: 2,
-  },
-  {
-    text: "Who wrote 'Romeo and Juliet'?",
-    options: [
-      'Charles Dickens',
-      'Jane Austen',
-      'Mark Twain',
-      'William Shakespeare',
-    ],
-    correct: 3,
-  },
-  {
-    text: 'What is the hardest natural substance?',
-    options: ['Gold', 'Iron', 'Diamond', 'Platinum'],
-    correct: 2,
-  },
-  {
-    text: 'Which country gifted the Statue of Liberty to the USA?',
-    options: ['England', 'Spain', 'France', 'Germany'],
-    correct: 2,
-  },
-  {
-    text: 'What is the fastest land animal?',
-    options: ['Lion', 'Cheetah', 'Leopard', 'Tiger'],
+    text: 'Which country built the first jet aircraft (1939)?',
+    options: ['United States', 'Germany', 'United Kingdom', 'Russia'],
     correct: 1,
+  },
+  {
+    text: 'What is the main function of wings?',
+    options: [
+      'To produce thrust',
+      'To produce lift',
+      'To reduce drag',
+      'To stabilise the aircraft',
+    ],
+    correct: 1,
+  },
+  {
+    text: 'What force moves an airplane forward?',
+    options: ['Lift', 'Drag', 'Thrust', 'Weight'],
+    correct: 2,
+  },
+  {
+    text: 'What is the body of an airplane called?',
+    options: ['Cockpit', 'Fuselage', 'Empennage', 'Wingbox'],
+    correct: 1,
+  },
+  {
+    text: 'What engines do most modern planes use?',
+    options: [
+      'Propeller engines',
+      'Jet engines',
+      'Rocket engines',
+      'Electric motors',
+    ],
+    correct: 1,
+  },
+  {
+    text: 'Who first proposed the modern airplane concept (1799)?',
+    options: [
+      'George Cayley',
+      'Otto Lilienthal',
+      'Samuel Langley',
+      'John Stringfellow',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What early aircraft had no engine but could glide?',
+    options: ['Biplane', 'Monoplane', 'Glider', 'Ornithopter'],
+    correct: 2,
+  },
+  {
+    text: 'What is the vertical tail fin used for?',
+    options: [
+      'Stability (yaw control)',
+      'Lift generation',
+      'Thrust reversal',
+      'Fuel storage',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What part controls up and down motion?',
+    options: ['Aileron', 'Elevator', 'Rudder', 'Flap'],
+    correct: 1,
+  },
+  {
+    text: 'What part controls left and right turning?',
+    options: ['Aileron', 'Elevator', 'Rudder', 'Spoiler'],
+    correct: 2,
+  },
+  {
+    text: 'What is the landing support system called?',
+    options: ['Landing gear', 'Undercarriage', 'Both A and B', 'Skids'],
+    correct: 2,
+  },
+  {
+    text: 'What type of wing has only one layer?',
+    options: ['Biplane', 'Monoplane', 'Triplane', 'Cantilever'],
+    correct: 1,
+  },
+  {
+    text: 'What type has two stacked wings?',
+    options: ['Monoplane', 'Biplane', 'Triplane', 'Parasol'],
+    correct: 1,
+  },
+  {
+    text: 'What is lift?',
+    options: [
+      'Downward force',
+      'Upward force from air',
+      'Side force',
+      'Forward force',
+    ],
+    correct: 1,
+  },
+  {
+    text: 'What is drag?',
+    options: [
+      'Air resistance',
+      'Friction with ground',
+      'Engine power loss',
+      'Weight',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is the opposite force of lift?',
+    options: ['Thrust', 'Drag', 'Weight', 'Gravity'],
+    correct: 2,
+  },
+  {
+    text: 'What type of engine uses spinning blades?',
+    options: ['Jet engine', 'Propeller engine', 'Rocket engine', 'Ramjet'],
+    correct: 1,
+  },
+  {
+    text: 'What does a jet engine push out to move forward?',
+    options: ['Air', 'Hot gases', 'Water', 'Steam'],
+    correct: 1,
+  },
+  {
+    text: 'What aircraft can fly without a pilot onboard?',
+    options: ['Glider', 'Drone', 'Helicopter', 'Airship'],
+    correct: 1,
+  },
+  {
+    text: 'What is the cockpit?',
+    options: [
+      'Passenger cabin',
+      'Cargo hold',
+      'Where the pilot controls the plane',
+      'Engine compartment',
+    ],
+    correct: 2,
+  },
+  {
+    text: 'What material were early planes made from?',
+    options: [
+      'Metal and plastic',
+      'Wood and fabric',
+      'Aluminium',
+      'Carbon fibre',
+    ],
+    correct: 1,
+  },
+  {
+    text: 'What material are modern planes mostly made from?',
+    options: ['Wood', 'Fabric', 'Metal and composites', 'Glass'],
+    correct: 2,
+  },
+  {
+    text: 'What is the main job of the tail?',
+    options: [
+      'Provide thrust',
+      'Store fuel',
+      'Stability and control',
+      'Reduce weight',
+    ],
+    correct: 2,
+  },
+  {
+    text: 'What is thrust produced by?',
+    options: ['Wings', 'Engines', 'Tail', 'Fuselage'],
+    correct: 1,
+  },
+  {
+    text: 'What limits propeller speed?',
+    options: ['Engine power', 'Speed of sound', 'Air density', 'Fuel type'],
+    correct: 1,
+  },
+  {
+    text: 'What is a jet‑powered passenger aircraft called?',
+    options: ['Airliner', 'Cargo plane', 'Fighter', 'Bomber'],
+    correct: 0,
+  },
+  {
+    text: 'What is a supersonic plane?',
+    options: [
+      'Slower than sound',
+      'Faster than sound',
+      'Equal to sound',
+      'Subsonic',
+    ],
+    correct: 1,
+  },
+  {
+    text: 'What famous supersonic aircraft was retired?',
+    options: ['Boeing 747', 'Concorde', 'Airbus A380', 'SR-71'],
+    correct: 1,
+  },
+  {
+    text: 'What is fuel burned in jet engines?',
+    options: ['Gasoline', 'Diesel', 'Aviation fuel', 'Kerosene'],
+    correct: 2,
+  },
+  {
+    text: 'What kind of pollution do planes produce?',
+    options: [
+      'Carbon emissions',
+      'Noise pollution',
+      'Both A and B',
+      'Water vapour',
+    ],
+    correct: 2,
+  },
+  {
+    text: 'What lines do planes leave in the sky?',
+    options: ['Vapour trails', 'Contrails', 'Both A and B', 'Smoke'],
+    correct: 2,
+  },
+  {
+    text: 'What is a flying wing aircraft?',
+    options: [
+      'Plane with no tail',
+      'Plane with almost no body',
+      'Plane with two wings',
+      'Plane with swept wings',
+    ],
+    correct: 1,
+  },
+  {
+    text: 'What helps a plane turn left or right smoothly?',
+    options: ['Elevator', 'Rudder', 'Ailerons', 'Flaps'],
+    correct: 2,
+  },
+  {
+    text: 'What happens during takeoff?',
+    options: [
+      'Lift becomes greater than weight',
+      'Weight becomes greater than lift',
+      'Thrust equals drag',
+      'Lift equals weight',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What happens during landing?',
+    options: [
+      'Thrust increases',
+      'Thrust reduces and plane slows',
+      'Lift increases',
+      'Drag decreases',
+    ],
+    correct: 1,
+  },
+  {
+    text: 'What is a turbofan engine?',
+    options: [
+      'Jet engine with a large fan',
+      'Propeller engine',
+      'Rocket engine',
+      'Ramjet',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is a rocket‑powered plane?',
+    options: [
+      'Uses onboard fuel and oxidizer',
+      'Uses only air',
+      'Uses electric power',
+      'Uses solar power',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What was the first jet airliner (1952)?',
+    options: [
+      'Boeing 707',
+      'Douglas DC-8',
+      'de Havilland Comet',
+      'Sud Aviation Caravelle',
+    ],
+    correct: 2,
+  },
+  {
+    text: 'What company made the Boeing 707?',
+    options: ['Airbus', 'Lockheed', 'Boeing', 'McDonnell Douglas'],
+    correct: 2,
+  },
+  {
+    text: 'What is the role of air traffic control?',
+    options: [
+      'Guide planes safely',
+      'Sell tickets',
+      'Maintain engines',
+      'Clean planes',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is an airfoil?',
+    options: [
+      'Wing shape that creates lift',
+      'Engine part',
+      'Landing gear',
+      'Tail fin',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is pitch?',
+    options: [
+      'Up and down movement',
+      'Side to side tilt',
+      'Left/right turning',
+      'Rolling',
+    ],
+    correct: 0,
+  },
+  {
+    text: 'What is roll?',
+    options: [
+      'Up/down',
+      'Tilting side to side',
+      'Turning left/right',
+      'Forward/backward',
+    ],
+    correct: 1,
+  },
+  {
+    text: 'What is yaw?',
+    options: ['Up/down', 'Side tilt', 'Turning left or right', 'Forward speed'],
+    correct: 2,
+  },
+  {
+    text: 'What makes airplanes safer than many transports?',
+    options: [
+      'Strict safety systems and design',
+      'Speed',
+      'Low cost',
+      'Passenger comfort',
+    ],
+    correct: 0,
   },
 ]
 

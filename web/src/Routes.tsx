@@ -9,7 +9,6 @@ import AddFundsPage from 'src/pages/AddFundsPage/AddFundsPage'
 import AddFundsSuccessPage from 'src/pages/AddFundsSuccessPage/AddFundsSuccessPage'
 import GamePage from 'src/pages/GamePage/GamePage'
 import HomePage from 'src/pages/HomePage/HomePage'
-import LandingHomePage from 'src/pages/LandingHomePage/LandingHomePage'
 import Level1Page from 'src/pages/Level1Page/Level1Page'
 import Level2Page from 'src/pages/Level2Page/Level2Page'
 import Level3Page from 'src/pages/Level3Page/Level3Page'
@@ -24,12 +23,9 @@ import WithdrawPage from 'src/pages/WithdrawPage/WithdrawPage'
 const Routes = () => {
   return (
     <Router>
-      {/* Public landing page – no layout */}
-      <Route path="/" page={LandingHomePage} name="landingHome" />
-
-      {/* Authenticated / main app pages with sidebar layout */}
+      {/* Dashboard is now the home page */}
       <Set wrap={MainLayout}>
-        <Route path="/dashboard" page={HomePage} name="home" />
+        <Route path="/" page={HomePage} name="home" />
         <Route path="/add-funds" page={AddFundsPage} name="addFunds" />
         <Route path="/add-funds/success" page={AddFundsSuccessPage} name="addFundsSuccess" />
         <Route path="/withdraw" page={WithdrawPage} name="withdraw" />
